@@ -11,24 +11,29 @@ namespace pdf_Split
         {
             Console.WriteLine("Em qual diretório esta os arquivos?");
             string path = Console.ReadLine();
-            string[] files = Directory.GetFiles(path);
+            string[] folders = Directory.GetDirectories(path);
 
-            foreach (string item in files)
+            foreach (string folder in folders)
             {
-                PdfDocument pdf = PdfDocument.FromFile(item);
-                for (int i = 0; i < pdf.PageCount; i++)
+                string[] files = Directory.GetFiles(folder);
+                foreach (string item in files)
                 {
-
-                    if ((i+1) % 2 == 0)
+                    PdfDocument pdf = PdfDocument.FromFile(item);
+                    for (int i = 0; i < pdf.PageCount; i++)
                     {
-                        pdf.CopyPages(i-1, i).SaveAs(item + i.ToString() + "-" + (i+1).ToString() + ".pdf");
+
+                        if ((i + 1) % 2 == 0)
+                        {
+                            pdf.CopyPages(i - 1, i).SaveAs(item + i.ToString() + "-" + (i + 1).ToString() + ".pdf");
+                        }
+                    }
+                    if (pdf.PageCount % 2 != 0)
+                    {
+                        pdf.CopyPages(pdf.PageCount - 1, pdf.PageCount - 1).SaveAs(item + pdf.PageCount.ToString() + ".pdf");
                     }
                 }
-                if (pdf.PageCount % 2 != 0)
-                {
-                    pdf.CopyPages(pdf.PageCount-1, pdf.PageCount-1).SaveAs(item + pdf.PageCount.ToString() + ".pdf");
-                }
             }
+            
 
             Console.WriteLine("Quebra concluida");
             Console.ReadLine();
